@@ -287,8 +287,8 @@ shinyServer(function(input, output, session) {
     } else {
       complexFeaturesCollapsed[get(input$cfcolumn) %in% input$cfvalue]
     }
-  })
-  
+  }
+  )
   
   #####################################
   ## Differential complex intensity   #
@@ -328,9 +328,12 @@ shinyServer(function(input, output, session) {
       diffComplexes()[pBHadj <= input$cc_volcano_pvalcutoff][abs(medianLog2FC) >= 
                                                              log2(input$cc_volcano_fccutoff)]
     }
-  })
-  
-  
+  }
+  #, options = list(autoWidth = TRUE,
+  #                  columnDefs = list(list(width = '100px', targets = 1))
+  #                  )
+  # attempt to limit column width failed.. move on
+  )
   
 })
 

@@ -137,8 +137,8 @@ shinyUI(fluidPage(
                                       multiple = FALSE, 
                                       # options = list(maxOptions = 6000),
                                       selected = "127_corum_corum"),
-                       numericInput("cc_volcano_pvalcutoff", label = "pBHadj cutoff:", value = 0.05, max = 1),
-                       numericInput("cc_volcano_fccutoff", label = "pBHadj cutoff:", value = 2),
+                       numericInput("cc_volcano_pvalcutoff", label = "maximal pBHadj cutoff:", value = 0.05, max = 1),
+                       numericInput("cc_volcano_fccutoff", label = "minimal fold-change (FC) cutoff:", value = 2),
                        checkboxInput("cc_difftable_show_all", "Show all (i.e. also non-significant)\n entries in table", value = FALSE)
                        
       ),
@@ -153,8 +153,17 @@ shinyUI(fluidPage(
       tabsetPanel(
         id = 'tabid',
         tabPanel('Welcome & Instructions',
-                 h1("Welcome to SECexplorer"),
+                 h1("Welcome to SECexplorer THP1"),
                  p("SECexplorer offers a dynamic interface for the investigator-driven exploration of mass spectrometric SEC-SWATH-MS datasets describing proteome assembly state dynamics as a function of different perturbed states of the biological system."),
+                 p("In this study, we ... > PROJECT DESCRIPTION <"),
+                 p("THP1 cells were investigated in three distinct biological conditions:"),
+                 p(),
+                 tags$ol(
+                   tags$ul("Undifferentiated: THP1 cells were grown in xxx in xxx dishes and harvested by xxx at xxx growth/confluency."),
+                   tags$ul("Differentiated: Undifferentiated cells were differentiated to xxx state by yyy."),
+                   tags$ul("Stimulated: Undifferentiated cells (?) were treated (xxx).")),
+                 p(),
+                 p("This tool facilitates exploration of this dataset in the following analysis tabs:"),
                  tags$ol(
                    tags$ul("1) View protein traces: Allows interactive viewing of protein SEC fractionation profiles across conditions."),
                    tags$ul("2) Protein differential intensity: View differential scores on protein level across conditions."),
@@ -163,81 +172,122 @@ shinyUI(fluidPage(
                    tags$ul("5) Complex differential intensity: View differential scores on complex level across conditions.")
                  ),
                  h1("Usage instructions:"),
-                 h2("(i) Protein profile viewer"),
-                 img(src='1_Viewer.png', align = "left", width = "100%"),
-                 h3("1. Selection of ID type"),
+                 p("To start an analysis, select the respective analysis tab above. Read this first, though or come back here for instructions if you get stuck :-)."),
+                 p(),
+                 
+                
+                  h2("1) View protein traces"),
+                 img(src='1.png', align = "left", width = "100%"),
+                 h3("1. Selection of protein identifier type or attribute on which to select proteins"),
                  tags$ul(
                    tags$li("Entry_name or Gene_Names are most informative and intuitive to search."),
-                   tags$li("Searching for specific gene/protein identifiers is then possible in field 2.")
+                   tags$li("Alternatively, proteins can be selected based on their participation in a given protein complex feature."),
+                   tags$li("Searching for specific gene/protein identifiers, or complex features they are associated with, is then possible in field 2.")
                    ),
-                 
                  h3("2. Search and selection of multiple proteins"),
                  tags$ul(
                    tags$li("Searching is achieved by deleting the current entry with backspace and starting to 
                  type. All identifiers of the type selected in (1) will be searched for the string 
                      entered, on-the-fly, with potential results showing up below the field, selectable 
                      by <Enter> or by a left mouse click."),
-                   tags$li("NOTE: Individual proteins can be removed again by <Backspace>.")
+                   tags$li("NOTE: Individual proteins/selections can be removed again by <Backspace>.")
                  ),
-                 h3("3. Chromatogram view across conditions "),
+                 h3("3. Protein chromatogram view across conditions"),
                  tags$ul(
                    tags$li("By default, a split graph shows the protein level abundance profiles over the 
-                            chromatographic fractions in either condition, interphase and mitosis."),
-                   tags$li("The chromatograms are displayed as mean of the three replicates, with shaded areas indicating the standard error of the mean (SEM)"),
-                   tags$li("Options for chromatogram display can be selected in (4)")
+                            chromatographic fractions in either condition."),
+                   tags$li("The chromatograms are displayed as mean of the three replicates per condition."),
+                   tags$li("Options for chromatogram display can be selected in (4) and a more detailed pdf version of the interactive graph
+                           can be downloaded via the download button (5).")
                  ),
+                 p("Note that the plots are interactive! (Thanks, plotly!)"),
                  h3("4. Options for chromatogram display"),
                  tags$ul(
-                   tags$li("Selection whether the plot should be split by condition, or if conditions shall be encoded as line type."),
+                   tags$li("Selection whether conditions or replicates should be collapsed in the plot. 
+                           \n Collapsing replicates produces mean intensities across replicates.
+                           \n Collapsing conditions produces line-type-encoded conditions."),
                    tags$li("Option for LOG10-transformation of the intensity axis to spot low-abundant protein pools"),
-                   tags$li("Selection whether monomer expected fraction markers shall be displayed"),
-                   tags$li("Option whether (and which type of) error areas shall be indicated. Works best on split plot.")
+                   tags$li("Selection whether monomer expected fraction markers shall be displayed. 
+                           \n Only applies to the downloadable .pdf") #,
+                   # tags$li("Option whether (and which type of) error areas shall be indicated. Works best on split plot.")
                    ),
-                 h3("Note that the plots are interactive (thanks, plotly!)"),
+                 
+                 h3("5. Download current graph as .pdf"),
+                 tags$ul(
+                   tags$li("Allows download of a more detailed pdf version of the current graph.")
+                 ),
+                 h3("6. Annotation table."),
+                 tags$ul(
+                   tags$li("Contains metainformation on the currently selected protein set."),
+                   tags$li("Also contains information in which complex id and complex feature id the protein is present.
+                           Detected complex features (including co-complex member subunits) can be selected and visualized in tab 4)!")
+                 ),
                  p(),
                  
-                 h2("(ii) Search for co-eluting proteins"),
-                 img(src='HowtoSearchInput.png', align = "left", width = "100%"),
-                 h3("1. Experimental condition"),
-                 tags$ul(tags$li("Choose the experimental condition where the search will be performed")),
-                 h3("2. Base Protein"),
-                 tags$ul(tags$li("Choose the protein Trace that will be searched")),
-                 h3("3. Search area"),
+                 
+                 
+                 h2("2) Protein differential intensity"),
+                 img(src='2.png', align = "left", width = "100%"),
+                 h3("1. Volcano plot of protein-feature-level differential scores of the comparison selected in (2)"),
+                 tags$ul(tags$li("Features of currently selected proteins are highlighted in the plot.
+                                 \nFeatures passing the significance cutoffs chosen in (3) are highlighted in red.
+                                 \nFeatures with insignificant differences are highlighted in dark grey."),
+                         tags$li("Outlier proteins identified from the hover information can be added to the
+                         analysis via the regular input fields.")),
+                 h3("2. Select pairwise comparison of biological conditions"),
+                 tags$ul(tags$li("Choose the comparison of biological conditions for the differential analysis.")),
+                 h3("3. Select significance cut-offs"),
                  tags$ul(
-                   tags$li("Define in which range co-eluting proteins should be searched for"),
-                   tags$li("If no selection is made all fractions will be used")
+                   tags$li("Select max. pBHadj and min. fold-change (FC) cut-offs."),
+                   tags$li("Selection will affect marker color in the volcano plot (1) and the contents of the table output in dependence on switch (4).")
                    ),
-                 h3("4. Perform the search"),
+                 h3("4. Show all entries in protein-level differential table"),
+                 tags$ul(tags$li("Select whether or not 'significant' features are reported in the output table (5)")),
+                 h3("5. Protein-level differential table"),
+                 tags$ul(tags$li("Protein feature level differential scores for the given comparison.
+                                 \n Displaying scores of only 'significant' features (default) or all scores (switch (4)).")),
                  p(),
-                 h2("(ii) Search for co-eluting proteins: Search Results"),
-                 img(src='HowtoSearchResult.png', align = "left", width = "100%"),
-                 h3("1. Correlation cutoff"),
-                 tags$ul(
-                   tags$li("Choose a cutoff for the local and global correlation of proteins to be displayed"),
-                   tags$li("Global correllation: The minimum correllation across all selected SEC fractions"),
-                   tags$li("Local correllation: The minimum correllation within the defined search area")
-                 ),
-                 h3("2. Result table"),
-                 tags$ul(tags$li("A table of all proteins meeting the search criteria")),
-                 h3("3. Reset"),
-                 tags$ul(tags$li("Return to the search input window")),
+                 
+                 
+                 
+                 h2("3) Protein differential assembly"),
+                 img(src='3.png', align = "left", width = "100%"),
+                 h3("1. Differential assembled mass fraction graph with scores of selected proteins highlighted."),
+                 tags$li("Outlier proteins identified from the hover information can be added to the
+                         analysis via the regular input fields."),
+                 h3("2. Select pairwise comparison of biological conditions"),
+                 h3("3. Select minimal mean Difference cutoff."),
+                 h3("4. Option to show all differential scores, also those not passing the mean Difference criterion set in (3)."),
+                 h3("5. Output table with differential scores in the given comarison chosen in (2) with criteria set in (3) and (4)."),
                  p(),
-                 h2("(iii) Browse differential association map"),
-                 img(src='3_BrowseScoreMap.png', align = "left", width = "100%"),
-                 h3("1. Select proteins based on scores"),
-                 tags$ul(
-                   tags$li("Each point represents one protein feature's differential scores between the conditions. Click the point or draw a box around the scores to select a set of proteins."),
-                   tags$li("Proteins are added to those already selected via the viewer. Visit this page to see the differential scores of a selected protein set of interest.")),
-                 h3("2. Conditional SEC profiles of the selected proteins. For more visualization options, visit the viewer tab (i)"),
+                 
+                 
+                 
+                 h2("4) View complex features"),
+                 img(src='4.PNG', align = "left", width = "100%"),
+                 h3("1. Select ID type based on which to select complex_id or feature_id"),
+                 h3("2. Select one complex_id or unique_feature_id to display the chromatogram and feature graph"),
+                 h3("3. Complex feature graph displaying for a selected complex the subunits' SEC chromatograms across conditions and detected complex signal ranges"),
+                 tags$ul(tags$li("3.1 First feature detected for this complex, details are given in complex feature table below (5)"),
+                         tags$li("3.2 Second feature detected for this complex, details are given in complex feature table below (5)")),
+                 h3("4. Download current graph as .pdf"),
+                 h3("5. Complex feature information table, giving details on the currently selected complex and features"),
+                 tags$ul(tags$li("Note that all detected features can be displayed via the checkbox below field (2).")),
                  p(),
-                 h2("(iv) Query StringDB partners"),
-                 img(src='4_QueryStringPartners.png', align = "left", width = "100%"),
-                 h3("1. Selected proteins"),
-                 h3("2. Select one protein as basis for the query to StringDB"),
-                 h3("3. Select parameters for the query to StringDB"),
-                 h3("4. Add the retrieved partner proteins to the current analysis"),
-                 h3("5. StringDB network view of the current query"),
-                 h3("6. Preview of the SEC-SWATH-MS chromatograms of the proteins of the current query (MS-detectable subset)")
+                 
+                 
+                 
+                 h2("5) Complex differential intensity"),
+                 img(src='5.PNG', align = "left", width = "100%"),
+                 h3("1. Select pairwise comparison of biological conditions"),
+                 h3("2. Select complex ID to be highlighted in the complex-level volcano plot (4)."),
+                 h3("3. Set significance criteria for the complex-level volcano plot (4) and the hits shown in the output table (5)."),
+                 h3("4. Complex-level differential volcano plot of the given comparison (set in (3))."),
+                 tags$li("Outlier complexes identified from the hover information can be added to the
+                         analysis via the respective input fields in Tab 4) and 5)."),
+                 h3("5. Output table with complex-level difference scores of the current comparison (3) and significance criteria (4)"),
+                 tags$ul(tags$li("Note that all detected features can be displayed via the checkbox below field (3).")),
+                 p()
                  
         ),
         tabPanel('1) View protein traces',       
