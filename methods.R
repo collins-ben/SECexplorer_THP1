@@ -1268,7 +1268,7 @@ plotVolcano_c = function (testResults,
 #'                      legend = FALSE)
 #'
 
-plotFeatures <- function(feature_table,
+plotFeaturesObject <- function(feature_table,
                          traces,
                          feature_id,
                          calibration = NULL,
@@ -1516,10 +1516,10 @@ plotFeatures <- function(feature_table,
   
   if(PDF){
     pdf(paste0(name,".pdf"), height = 6, width = 8)
+    plot(p)
   }
-  plot(p)
   if(PDF){
     dev.off()
   }
-  
+  return(p)
 }
