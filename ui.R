@@ -1,6 +1,6 @@
 ####################################################################################
 # SECexplorer
-#####################################################################################
+####################################################################################
 # UI
 
 ## prepare environment
@@ -55,7 +55,7 @@ shinyUI(fluidPage(
   theme = shinytheme("cosmo"),
 
   # Application title
-  headerPanel("SECexplorer", windowTitle = "SECexplorer"),
+  headerPanel("SECexplorer-THP1", windowTitle = "SECexplorer-THP1"),
 
   # Sidebar with a slider input for number of observations
   sidebarLayout(
