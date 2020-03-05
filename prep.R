@@ -145,3 +145,7 @@ saveRDS(complexes_diff_ids, file = "data/complexes_diff_ids.rda")
 names(complexFeaturesCollapsed)
 cfidcols = names(complexFeaturesCollapsed)[c(7,1,2,3)]
 saveRDS(cfidcols, file = "data/cfidcols.rda")
+
+# Set bioconductor repository for Shiny deploy to go thru..
+library(BiocManager)
+options(repos = BiocManager::repositories())
