@@ -254,6 +254,25 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # re-render plot for download (no plot object available)
+  output$downloadPlot_cF <- downloadHandler(
+    filename = function() { paste("complexFeatures_", input$cfvalue, '.pdf', sep='') },
+    content = function(file) {ggsave(file, width=10, height=6, 
+                                     plot = CCprofiler::plotFeatures(feature_table = complexFeaturesCollapsed,
+                                                                     traces = protTraces,
+                                                                     feature_id = complexFeaturesCollapsed[get(input$cfcolumn) %in% input$cfvalue]$complex_id,
+                                                                     design_matrix=designMatrix,
+                                                                     calibration=calibration_functions,
+                                                                     annotation_label = "Entry_name",
+                                                                     peak_area = T,
+                                                                     legend = F,
+                                                                     onlyBest = F,
+                                                                     PDF = FALSE,
+                                                                     monomer_MW=T,
+                                                                     aggregateReplicates=T), 
+                                     device = "pdf")}
+    )
+  
   # render complex feature table
   output$cf_table <- DT::renderDT({
     if(input$cf_table_show_all){

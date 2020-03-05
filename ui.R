@@ -115,6 +115,7 @@ shinyUI(fluidPage(
                                   selected = "complex_id"),
                       uiOutput("cfcolumnvalues"), #The possible choices of this field are calculated on the server side and passed over by uiOutput
                       p("Select complex feature of interest above"),
+                      p(),
                       checkboxInput("cf_table_show_all",
                                     "Show all entries in table\n(i.e. not only the selected feature id)", value = FALSE)
                       
@@ -241,7 +242,7 @@ shinyUI(fluidPage(
         ),
         tabPanel('1) View protein traces',       
                  plotlyOutput("plot", height = 600),
-                 downloadButton("downloadPlot", "Download as PDF"),
+                 downloadButton("downloadPlot", "Download graph as PDF"),
                  p(),
                  DT::dataTableOutput("anntable")
         ),
@@ -255,6 +256,9 @@ shinyUI(fluidPage(
         ),
         tabPanel('4) View complex features',
                  plotOutput("cf_plot", height=600),
+                 downloadButton("downloadPlot_cF", "Download graph as PDF"),
+                 p(),
+                 # Not functional as no plot object is available for output
                  DT::dataTableOutput("cf_table")
         ),
         tabPanel('5) Complex differential intensity',
