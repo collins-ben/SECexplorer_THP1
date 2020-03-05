@@ -48,7 +48,12 @@ calibration_functions <- readRDS("data/calibration.rds")
 proteins <- readRDS("data/proteins.rds")
 protTraces = readRDS("data/protTracesList.rds")
 designMatrix = readRDS("data/design_matrix.rds")
-default_proteins <- c("GPS1 COPS1 CSN1", "COPS3 CSN3", "COPS8 CSN8")
+# default_proteins <- c("GPS1 COPS1 CSN1", "COPS3 CSN3", "COPS8 CSN8")
+default_proteins <- c("NDC80 HEC HEC1 KNTC2",
+                      "SPC24 SPBC24",
+                      "NUF2 CDCA1 NUF2R",
+                      "SPC25 SPBC25 AD024")
+
 default_complexftid <- "127_corum_corum"
 
 # Differentials
@@ -98,8 +103,10 @@ shinyServer(function(input, output, session) {
   # Subset traces
   target_id_traces <- eventReactive(input$fvalue,{
     
-    target_id_traces = subset(protTraces, trace_subset_ids = input$fvalue,
-                             trace_subset_type = input$fcolumn)
+    selected_protein_ids = proteins[get(input$fcolumn) %in% input$fvalue]$protein_id
+    
+    target_id_traces = subset(protTraces, trace_subset_ids = selected_protein_ids,
+                             trace_subset_type = "id")
   })
 
   ## Plot the selected traces
