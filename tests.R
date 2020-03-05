@@ -1,4 +1,28 @@
+# Test functions / code for main Shiny app
+
+## Tabs
+# '1) View protein traces'
+# '2) Protein differential intensity'
+# '3) Protein differential assembly'
+# '4) View complex features'
+# '5) Complex differential intensity'
+
+## Objects/plots
+# plot
+# anntable
+# pc_volcano
+# pc_difftable
+# pc_assemblyScatter
+# pc_assemblyTable
+# cc_volcano
+# cc_table
+# cf_traces
+# cf_table
+
+
+# define inputs
 default_proteins <- c("NUP54", "NUP62", "NUP58 KIAA0410 NUPL1")
+default_complexftid <- "127_corum_corum"
 
 input = list("fcolumn" = "Gene_names",
              "fvalue" = default_proteins,
@@ -15,6 +39,8 @@ input = list("fcolumn" = "Gene_names",
 target_id_traces = subset(protTraces, trace_subset_ids = input$fvalue,
                           trace_subset_type = input$fcolumn)
 
+# Test traces plot
+##################
 plot(target_id_traces,
      #colour_by = input$fcolumn,
      collapse_conditions = input$collapse_conditions,
@@ -28,25 +54,9 @@ plot(target_id_traces,
 # get protein info for selected set independent of filter column type
 proteins[get(input$fcolumn) %in% input$fvalue]
 
-## Tabs
-# '1) View protein traces'
-# '2) Protein differential intensity'
-# '3) Protein differential assembly'
-# '4) Complex differential intensity'
 
-## Objects/plots
-# plot
-# anntable
-# pc_volcano
-# pc_difftable
-# pc_assemblyScatter
-# pc_assemblyTable
-# cc_volcano
-# cc_traces
-
-##############
-# Volcano tests
-
+# Test pc Volcano plot
+######################
 diffProteins = diffProteins_differentiated_undifferentiated
  
   selected_protein_ids = proteins[get(input$fcolumn) %in% input$fvalue]$protein_id
@@ -59,7 +69,8 @@ diffProteins = diffProteins_differentiated_undifferentiated
   ggplotly(dplot)
 
 
-# Scatter test
+# Test pc Scatter plot
+######################
 diffProteinAssemblyState = copy(diffAssemblyState_differentiated_undifferentiated)
 
 selected_protein_ids = proteins[get(input$fcolumn) %in% input$fvalue]$protein_id
@@ -80,7 +91,10 @@ splot2 = splot1 + geom_point(data = diffProteinAssemblyState[protein_id %in% sel
 ggplotly(splot2)
 
 
-## Complex-centric tests
+## Test differential Complex-centric plots/analysis
+###################################################
+###################################################
+# Are all complex Ids the same in the 3 comparisons?
 library(UpSetR)
 upset(fromList(list("d_ud" = diffComplexes_differentiated_undifferentiated$complex_id,
                     "st_d" = diffComplexes_stimulated_differentiated$complex_id,
@@ -88,8 +102,9 @@ upset(fromList(list("d_ud" = diffComplexes_differentiated_undifferentiated$compl
 # All are the same!
 
 # CC volcano
+############
 diffComplexes = copy(diffComplexes_differentiated_undifferentiated)
-selected_complex_id = "127_corum_corum"
+selected_complex_id = default_complexftid
 
 plotVolcano(diffComplexes,
             pBHadj_cutoff = input$cc_volcano_pvalcutoff,
@@ -100,19 +115,36 @@ plotVolcano(diffComplexes,
 # debugonce(plotVolcano)
 # label choice n/a, workaround: Additional function plotVolcano_c for complex level plot with hover label
 
+plotVolcano_c(diffComplexes,
+            pBHadj_cutoff = input$cc_volcano_pvalcutoff,
+            FC_cutoff = input$cc_volcano_fccutoff,
+            highlight = selected_complex_id,
+            plot = FALSE)
 
 ## Test cc feature plots
 target_complex = selected_complex_id
+
+CCprofiler::plotFeatures(feature_table = complexFeaturesCollapsed,
+                         traces = protTraces,
+                         feature_id = input$cf_value,
+                         design_matrix=designMatrix,
+                         calibration=calibration_functions,
+                         annotation_label = "Entry_name",
+                         peak_area = T,
+                         legend = F,
+                         onlyBest = F,
+                         PDF = FALSE,
+                         monomer_MW=T,
+                         aggregateReplicates=T)
+
 
 # Test alternative complex ids that are part of a complexfeatureid group
 # target_complex = "2202_corum_corum" -> runs itself dead
 # full feature id:
 input[["cf_column"]] = "complex_id"
-input[["cf_value"]] = complexFeaturesCollapsed$complex_id[11]
+input[["cf_value"]] = complexFeaturesCollapsed$complex_id[11] # works smoothly
 
 names(complexFeaturesCollapsed)
-
-complex_feature_complex_ids = complexFeaturesCollapsed$complex_id[11] # works smoothly
 
 CCprofiler::plotFeatures(feature_table = complexFeaturesCollapsed,
              traces = protTraces,
@@ -140,6 +172,7 @@ p = plotFeaturesObject(feature_table = complexFeaturesCollapsed,
              PDF = FALSE,
              monomer_MW=T,
              aggregateReplicates=T)
+
 # plot object return won't work; internal methods required:
 # Fehler in plotFeaturesObject(feature_table = complexFeaturesCollapsed,  : 
 # unbenutzte Argumente (design_matrix = designMatrix, aggregateReplicates = T)
