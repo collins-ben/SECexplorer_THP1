@@ -135,8 +135,13 @@ proteins[, parent_complex_feature_identifiers:=paste(unique(complexFeatures[grep
 saveRDS(proteins, "data/proteins.rda")
 saveRDS(names(proteins)[1:3], "data/protidcols.rda")
 
-# Make complex selection table
+# Make complex selection table (Differential Tab)
 complexes_diff_ids = unique(c(diffComplexes_differentiated_undifferentiated$complex_id,
                               diffComplexes_stimulated_differentiated$complex_id,
                               diffComplexes_stimulated_undifferentiated$complex_id))
 saveRDS(complexes_diff_ids, file = "data/complexes_diff_ids.rda")
+
+# Make complex feature selection table
+names(complexFeaturesCollapsed)
+cfidcols = names(complexFeaturesCollapsed)[c(7,1,2,3)]
+saveRDS(cfidcols, file = "data/cfidcols.rda")

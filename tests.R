@@ -97,4 +97,54 @@ plotVolcano(diffComplexes,
             highlight = selected_complex_id,
             plot = FALSE)
 
-debugonce(plotVolcano)
+# debugonce(plotVolcano)
+# label choice n/a, workaround: Additional function plotVolcano_c for complex level plot with hover label
+
+
+## Test cc feature plots
+target_complex = selected_complex_id
+
+# Test alternative complex ids that are part of a complexfeatureid group
+# target_complex = "2202_corum_corum" -> runs itself dead
+# full feature id:
+input[["cf_column"]] = "complex_id"
+input[["cf_value"]] = complexFeaturesCollapsed$complex_id[11]
+
+names(complexFeaturesCollapsed)
+
+complex_feature_complex_ids = complexFeaturesCollapsed$complex_id[11] # works smoothly
+
+plotFeatures(feature_table = complexFeaturesCollapsed,
+             traces = protTraces,
+             feature_id = input$cf_value,
+             design_matrix=designMatrix,
+             calibration=calibration_functions,
+             annotation_label = "Entry_name",
+             peak_area = T,
+             legend = F,
+             onlyBest = F,
+             PDF = FALSE,
+             monomer_MW=T,
+             aggregateReplicates=T)
+
+
+p = plotFeaturesObject(feature_table = complexFeaturesCollapsed,
+             traces = protTraces,
+             feature_id = input$cf_value,
+             design_matrix=designMatrix,
+             calibration=calibration_functions,
+             annotation_label = "Entry_name",
+             peak_area = T,
+             legend = F,
+             onlyBest = F,
+             PDF = FALSE,
+             monomer_MW=T,
+             aggregateReplicates=T)
+# plot object return won't work; internal methods required:
+# Fehler in plotFeaturesObject(feature_table = complexFeaturesCollapsed,  : 
+# unbenutzte Argumente (design_matrix = designMatrix, aggregateReplicates = T)
+
+
+
+
+

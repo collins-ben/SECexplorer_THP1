@@ -49,6 +49,7 @@ proteins <- readRDS("data/proteins.rds")
 protTraces = readRDS("data/protTracesList.rds")
 designMatrix = readRDS("data/design_matrix.rds")
 default_proteins <- c("GPS1 COPS1 CSN1", "COPS3 CSN3", "COPS8 CSN8")
+default_complexftid <- "127_corum_corum"
 
 # Differentials
 # Protein-level
@@ -72,12 +73,21 @@ diffComplexes_differentiated_undifferentiated <- readRDS("data/complex_DiffExprC
 shinyServer(function(input, output, session) {
   
   ## Generate Reactive Filter Value Field for UI, depending on filter column chosen
+  # protein selection
   output$fcolumnvalues <- renderUI({
     values <- sort(unique(proteins[[input$fcolumn]]))
     # values <- values[nchar(values)>0]
     selectizeInput("fvalue", "Search and select proteins of interest", values,
                    multiple = TRUE, options = list(maxOptions = 6000),
                    selected = default_proteins)
+  })
+  
+  # complex feature selection
+  output$cfcolumnvalues <- renderUI({
+    values <- sort(unique(complexFeaturesCollapsed[[input$cfcolumn]]))
+    selectizeInput("cfvalue", "Search and select complex features of interest", values,
+                   multiple = FALSE, options = list(maxOptions = 6000),
+                   selected = default_complexftid)
   })
   
   ############################
@@ -217,6 +227,12 @@ shinyServer(function(input, output, session) {
             diffProteinAssemblyState()[meanDiff <= -input$pc_assemblyScatter_meanDiffcutoff, more_assembled_in:=1])
     }
   })
+  
+  #####################################
+  ## Complex feature viewer           #
+  #####################################
+  
+  
   
   #####################################
   ## Differential complex intensity   #

@@ -45,6 +45,7 @@ library(CCprofiler)
 ## prepare data
 idcols <- readRDS("data/protidcols.rda")
 complexes_diff_ids <- readRDS("data/complexes_diff_ids.rda")
+cfidcols <- readRDS("data/cfidcols.rda")
 
 ## define user interface
 ########################
@@ -108,7 +109,13 @@ shinyUI(fluidPage(
                        
       ),
       conditionalPanel('input.tabid === "4) View complex features"',
-                      numericInput("test", label = "test", value = 1)
+                      numericInput("test", label = "test", value = 1),
+                      selectInput(inputId = "cfcolumn",
+                                  label = "Select complex features based on:",
+                                  choices = cfidcols,
+                                  selected = "complex_id"),
+                      uiOutput("cfcolumnvalues"), #The possible choices of this field are calculated on the server side and passed over by uiOutput
+                      p("Delete above entries by backspace and start typing for live search for your target protein(s)")
                        
       ),
       conditionalPanel('input.tabid === "5) Complex differential intensity"',
