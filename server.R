@@ -146,11 +146,11 @@ shinyServer(function(input, output, session) {
   #            "Stimulated vs. differentiated",
   #            "Stimulated vs. undifferentiated")
   
-  diffProteins <- eventReactive(input$comparison,{
+  diffProteins <- eventReactive(input$comparison_pINT,{
     
-    if (input$comparison == "Differentiated vs. undifferentiated"){
+    if (input$comparison_pINT == "Differentiated vs. undifferentiated"){
       diffProteins = diffProteins_differentiated_undifferentiated
-    } else if (input$comparison == "Stimulated vs. differentiated"){
+    } else if (input$comparison_pINT == "Stimulated vs. differentiated"){
       diffProteins = diffProteins_stimulated_differentiated
     } else {
       diffProteins = diffProteins_stimulated_undifferentiated
@@ -188,11 +188,11 @@ shinyServer(function(input, output, session) {
   #####################################
   
   # Select dataset based on comparison
-  diffProteinAssemblyState <- eventReactive(input$comparison,{
+  diffProteinAssemblyState <- eventReactive(input$comparison_pAMF,{
     
-    if (input$comparison == "Differentiated vs. undifferentiated"){
+    if (input$comparison_pAMF == "Differentiated vs. undifferentiated"){
       diffProteinAssemblyState = diffAssemblyState_differentiated_undifferentiated
-    } else if (input$comparison == "Stimulated vs. differentiated"){
+    } else if (input$comparison_pAMF == "Stimulated vs. differentiated"){
       diffProteinAssemblyState = diffAssemblyState_stimulated_differentiated
     } else {
       diffProteinAssemblyState = diffAssemblyState_stimulated_undifferentiated
@@ -295,11 +295,11 @@ shinyServer(function(input, output, session) {
   #####################################
   
   # Select dataset based on comparison
-  diffComplexes <- eventReactive(input$comparison,{
+  diffComplexes <- eventReactive(input$comparison_cINT,{
     
-    if (input$comparison == "Differentiated vs. undifferentiated"){
+    if (input$comparison_cINT == "Differentiated vs. undifferentiated"){
       diffComplexes = diffComplexes_differentiated_undifferentiated
-    } else if (input$comparison == "Stimulated vs. differentiated"){
+    } else if (input$comparison_cINT == "Stimulated vs. differentiated"){
       diffComplexes = diffComplexes_stimulated_differentiated
     } else {
       diffComplexes = diffComplexes_stimulated_undifferentiated
