@@ -1,0 +1,265 @@
+####################################################################################
+# SECexplorer
+####################################################################################
+# Server
+
+## prepare environment
+if (!require("shiny")){
+  install.packages("shiny")
+}
+if (!require("ggplot2")){
+  install.packages("ggplot2")
+}
+if (!require("plotly")){
+  install.packages("plotly")
+}
+if (!require("data.table")){
+  install.packages("data.table")
+}
+if (!require("DT")){
+  install.packages("DT")
+}
+if (!requireNamespace("BiocManager", quietly = TRUE)){
+  install.packages("BiocManager")
+}
+if (!require("GenomeInfoDbData")){
+  BiocManager::install("GenomeInfoDbData")
+}
+
+# Get CCprofiler package differential branch
+if (!require("CCprofiler")){
+  devtools::install_github("CCprofiler/CCprofiler", ref = "differential")
+}
+
+# load packages
+library(shiny)
+library(ggplot2)
+library(plotly)
+library(data.table)
+library(DT)
+library(CCprofiler)
+
+# load modified methods
+source("methods.R")
+
+## prepare data
+#calibration_functions <- readRDS("www/data/calibration_functions.rda")
+calibration_functions <- readRDS("data/calibration.rds")
+proteins <- readRDS("data/proteins.rds")
+protTraces = readRDS("data/protTracesList.rds")
+designMatrix = readRDS("data/design_matrix.rds")
+default_proteins <- c("GPS1 COPS1 CSN1", "COPS3 CSN3", "COPS8 CSN8")
+
+# Differentials
+# Protein-level
+diffProteins_differentiated_undifferentiated <- readRDS("data/protein_DiffExprProtein_differentiated_undifferentiated.rda")
+diffProteins_stimulated_undifferentiated <- readRDS("data/protein_DiffExprProtein_stimulated_undifferentiated.rda")
+diffProteins_stimulated_differentiated <- readRDS("data/protein_DiffExprProtein_stimulated_differentiated.rda")
+
+diffAssemblyState_stimulated_undifferentiated <- readRDS("data/diffAssemblyState_stimulated_undifferentiated.rda")
+diffAssemblyState_stimulated_differentiated <- readRDS("data/diffAssemblyState_stimulated_differentiated.rda")
+diffAssemblyState_differentiated_undifferentiated <- readRDS("data/diffAssemblyState_differentiated_undifferentiated.rda")
+
+# Complex-level
+diffComplexes_stimulated_undifferentiated <- readRDS("data/complex_DiffExprComplex_stimulated_undifferentiated.rda")
+diffComplexes_stimulated_differentiated <- readRDS("data/complex_DiffExprComplex_stimulated_differentiated.rda")
+diffComplexes_differentiated_undifferentiated <- readRDS("data/complex_DiffExprComplex_differentiated_undifferentiated.rda")
+
+## define server roles
+#######################
+
+shinyServer(function(input, output, session) {
+  
+  ## Generate Reactive Filter Value Field for UI, depending on filter column chosen
+  output$fcolumnvalues <- renderUI({
+    values <- sort(unique(proteins[[input$fcolumn]]))
+    # values <- values[nchar(values)>0]
+    selectizeInput("fvalue", "Search and select proteins of interest", values,
+                   multiple = TRUE, options = list(maxOptions = 6000),
+                   selected = default_proteins)
+  })
+  
+  ############################
+  ## Viewer Tab              #
+  ############################
+
+  ## generate selected protein SEC traces plot
+  # Subset traces
+  target_id_traces <- eventReactive(input$fvalue,{
+    
+    target_id_traces = subset(protTraces, trace_subset_ids = input$fvalue,
+                             trace_subset_type = input$fcolumn)
+  })
+
+  ## Plot the selected traces
+  output$plot <- renderPlotly({
+    vplot <<- plot(target_id_traces(),
+                   # colour_by = input$fcolumn, ## causes problems in combination with collapsing
+                   collapse_conditions = input$collapse_conditions,
+                   aggregateReplicates = input$collapse_replicates,
+                   name = "",
+                   monomer_MW = input$show_monomers,
+                   log = input$logscale,
+                   design_matrix = designMatrix,
+                   plot = FALSE)
+    ggplotly(vplot)
+  })
+  
+  ## Download the displayed plot
+  output$downloadPlot <- downloadHandler(
+    filename = function() { paste("currentPlot", '.pdf', sep='') },
+    content = function(file) {
+      ggsave(file, width=10, height=6, plot = vplot, device = "pdf")
+    }
+  )
+  
+  # Display the annotation table for the selected proteins
+  output$anntable <- renderDT({
+    proteins[get(input$fcolumn) %in% input$fvalue]
+  })
+  
+  #####################################
+  ## Differential protein intensity   #
+  #####################################
+  
+  # Select dataset based on user-defined comparison
+  
+  # choices= c("Differentiated vs. undifferentiated",
+  #            "Stimulated vs. differentiated",
+  #            "Stimulated vs. undifferentiated")
+  
+  diffProteins <- eventReactive(input$comparison,{
+    
+    if (input$comparison == "Differentiated vs. undifferentiated"){
+      diffProteins = diffProteins_differentiated_undifferentiated
+    } else if (input$comparison == "Stimulated vs. differentiated"){
+      diffProteins = diffProteins_stimulated_differentiated
+    } else {
+      diffProteins = diffProteins_stimulated_undifferentiated
+    }
+    
+  })
+  
+  # render pc volcano
+  output$pc_volcano <- renderPlotly({
+    
+    selected_protein_ids = proteins[get(input$fcolumn) %in% input$fvalue]$protein_id
+    
+    dplot <<- plotVolcano(diffProteins(),
+                          pBHadj_cutoff = input$pc_volcano_pvalcutoff,
+                          FC_cutoff = input$pc_volcano_fccutoff,
+                          highlight = selected_protein_ids,
+                          plot = FALSE)
+    ggplotly(dplot)
+  })
+  
+  # render pc diff table
+  output$pc_difftable <- DT::renderDT({
+    diffProteins.s = diffProteins()[, .(feature_id, Entry_name, Gene_names, Npeptides,
+                                      apex, pBHadj, medianLog2FC, qVal, global_pBHadj, global_medianLog2FC, global_qVal)]
+    if(input$pc_difftable_show_all){
+      diffProteins.s
+    } else {
+      diffProteins.s[pBHadj <= input$pc_volcano_pvalcutoff][abs(medianLog2FC) >= 
+                                                          log2(input$pc_volcano_fccutoff)]
+    }
+  })
+  
+  #####################################
+  ## Differential protein assembly    #
+  #####################################
+  
+  # Select dataset based on comparison
+  diffProteinAssemblyState <- eventReactive(input$comparison,{
+    
+    if (input$comparison == "Differentiated vs. undifferentiated"){
+      diffProteinAssemblyState = diffAssemblyState_differentiated_undifferentiated
+    } else if (input$comparison == "Stimulated vs. differentiated"){
+      diffProteinAssemblyState = diffAssemblyState_stimulated_differentiated
+    } else {
+      diffProteinAssemblyState = diffAssemblyState_stimulated_undifferentiated
+    }
+    
+  })
+  
+  # render assembly state scatter plot
+  output$pc_assemblyScatter <- renderPlotly({
+    
+    selected_protein_ids = proteins[get(input$fcolumn) %in% input$fvalue]$protein_id
+    
+    meanDiff_cutoff = input$pc_assemblyScatter_meanDiffcutoff
+    
+    splot1 <<- ggplot(diffProteinAssemblyState(),
+                      aes(x=meanAMF1, y=meanAMF2, colour=-log10(betaPval_BHadj), label = paste(protein_id,Entry_name,Gene_names))) +
+      geom_abline(intercept = meanDiff_cutoff, slope = 1) +
+      geom_abline(intercept = -meanDiff_cutoff, slope = 1) +
+      geom_point() +
+      theme_bw() 
+    
+    splot2 = splot1 + geom_point(data = diffProteinAssemblyState()[protein_id %in% selected_protein_ids],
+                                 aes(x=meanAMF1, y=meanAMF2, label = paste(protein_id,Entry_name,Gene_names)),
+                                 colour="red", size = 3)
+    ggplotly(splot2)
+  })
+  
+  # render assembly state output table
+  output$pc_assemblyTable <- DT::renderDT({
+    if(input$pc_diffAssemblytable_show_all){
+      dt = diffProteinAssemblyState()
+      dt[, more_assembled_in:=NA]
+      dt[meanDiff >= input$pc_assemblyScatter_meanDiffcutoff, more_assembled_in:=2]
+      dt[meanDiff <= -input$pc_assemblyScatter_meanDiffcutoff, more_assembled_in:=1]
+      dt
+      
+    } else {
+      rbind(diffProteinAssemblyState()[meanDiff >= input$pc_assemblyScatter_meanDiffcutoff, more_assembled_in:=2],
+            diffProteinAssemblyState()[meanDiff <= -input$pc_assemblyScatter_meanDiffcutoff, more_assembled_in:=1])
+    }
+  })
+  
+  #####################################
+  ## Differential complex intensity   #
+  #####################################
+  
+  # Select dataset based on comparison
+  diffComplexes <- eventReactive(input$comparison,{
+    
+    if (input$comparison == "Differentiated vs. undifferentiated"){
+      diffComplexes = diffComplexes_differentiated_undifferentiated
+    } else if (input$comparison == "Stimulated vs. differentiated"){
+      diffComplexes = diffComplexes_stimulated_differentiated
+    } else {
+      diffComplexes = diffComplexes_stimulated_undifferentiated
+    }
+    
+  })
+  
+  # Render complex volcano
+  output$cc_volcano <- renderPlotly({
+    
+    selected_complex_id = input$complexid
+    
+    cvplot <<- plotVolcano_c(diffComplexes(),
+                          pBHadj_cutoff = input$cc_volcano_pvalcutoff,
+                          FC_cutoff = input$cc_volcano_fccutoff,
+                          highlight = selected_complex_id,
+                          plot = FALSE)
+    ggplotly(cvplot)
+  })
+  
+  # Render complex table
+  output$cc_difftable <- DT::renderDT({
+    if(input$cc_difftable_show_all){
+      diffComplexes()
+    } else {
+      diffComplexes()[pBHadj <= input$cc_volcano_pvalcutoff][abs(medianLog2FC) >= 
+                                                             log2(input$cc_volcano_fccutoff)]
+    }
+  })
+  
+  
+  
+})
+
+
+
