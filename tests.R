@@ -114,7 +114,7 @@ names(complexFeaturesCollapsed)
 
 complex_feature_complex_ids = complexFeaturesCollapsed$complex_id[11] # works smoothly
 
-plotFeatures(feature_table = complexFeaturesCollapsed,
+CCprofiler::plotFeatures(feature_table = complexFeaturesCollapsed,
              traces = protTraces,
              feature_id = input$cf_value,
              design_matrix=designMatrix,

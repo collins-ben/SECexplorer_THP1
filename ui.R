@@ -109,13 +109,15 @@ shinyUI(fluidPage(
                        
       ),
       conditionalPanel('input.tabid === "4) View complex features"',
-                      numericInput("test", label = "test", value = 1),
                       selectInput(inputId = "cfcolumn",
                                   label = "Select complex features based on:",
                                   choices = cfidcols,
                                   selected = "complex_id"),
                       uiOutput("cfcolumnvalues"), #The possible choices of this field are calculated on the server side and passed over by uiOutput
-                      p("Delete above entries by backspace and start typing for live search for your target protein(s)")
+                      p("Select complex feature of interest above"),
+                      checkboxInput("cf_table_show_all",
+                                    "Show all entries in table\n(i.e. not only the selected feature id)", value = FALSE)
+                      
                        
       ),
       conditionalPanel('input.tabid === "5) Complex differential intensity"',
@@ -252,8 +254,8 @@ shinyUI(fluidPage(
                  DT::dataTableOutput("pc_assemblyTable")
         ),
         tabPanel('4) View complex features',
-                 #plotlyOutput("cf_plot", height=600),
-                 #DT::dataTableOutput("cf_table")
+                 plotOutput("cf_plot", height=600),
+                 DT::dataTableOutput("cf_table")
         ),
         tabPanel('5) Complex differential intensity',
                  plotlyOutput("cc_volcano", height=400),

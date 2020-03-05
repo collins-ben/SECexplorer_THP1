@@ -232,6 +232,36 @@ shinyServer(function(input, output, session) {
   ## Complex feature viewer           #
   #####################################
   
+  # render complex feature plot
+  # Note: This plot is non-interactive as export of plot object from base function
+  # plotFeatures (in combination with tracesList input to traces arg) doesn't fly
+  output$cf_plot <- renderPlot({
+    
+    selected_complex_ft_id = complexFeaturesCollapsed[get(input$cfcolumn) %in% input$cfvalue]$complex_id
+    
+    CCprofiler::plotFeatures(feature_table = complexFeaturesCollapsed,
+                 traces = protTraces,
+                 feature_id = selected_complex_ft_id,
+                 design_matrix=designMatrix,
+                 calibration=calibration_functions,
+                 annotation_label = "Entry_name",
+                 peak_area = T,
+                 legend = F,
+                 onlyBest = F,
+                 PDF = FALSE,
+                 monomer_MW=T,
+                 aggregateReplicates=T)
+    
+  })
+  
+  # render complex feature table
+  output$cf_table <- DT::renderDT({
+    if(input$cf_table_show_all){
+      complexFeaturesCollapsed
+    } else {
+      complexFeaturesCollapsed[get(input$cfcolumn) %in% input$cfvalue]
+    }
+  })
   
   
   #####################################
