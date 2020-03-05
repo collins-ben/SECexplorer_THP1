@@ -107,7 +107,11 @@ shinyUI(fluidPage(
                                      "Show all entries in table\n(i.e. not only those passing mean Difference cutoff criterion)", value = FALSE)
                        
       ),
-      conditionalPanel('input.tabid === "4) Complex differential intensity"',
+      conditionalPanel('input.tabid === "4) View complex features"',
+                      numericInput("test", label = "test", value = 1)
+                       
+      ),
+      conditionalPanel('input.tabid === "5) Complex differential intensity"',
                        selectizeInput("comparison",
                                       label = "Select comparison",
                                       choices= c("Differentiated vs. undifferentiated",
@@ -145,7 +149,8 @@ shinyUI(fluidPage(
                    tags$ul("1) View protein traces: Allows interactive viewing of protein SEC fractionation profiles across conditions."),
                    tags$ul("2) Protein differential intensity: View differential scores on protein level across conditions."),
                    tags$ul("3) Protein differential assembly: View proteins differential assembled mass fraction across conditions."),
-                   tags$ul("4) Complex differential intensity: View differential scores on complex level across conditions.")
+                   tags$ul("4) View complex features: View detected complex signals across conditions."),
+                   tags$ul("5) Complex differential intensity: View differential scores on complex level across conditions.")
                  ),
                  h1("Usage instructions:"),
                  h2("(i) Protein profile viewer"),
@@ -239,7 +244,11 @@ shinyUI(fluidPage(
                  plotlyOutput("pc_assemblyScatter", height = 400),
                  DT::dataTableOutput("pc_assemblyTable")
         ),
-        tabPanel('4) Complex differential intensity',
+        tabPanel('4) View complex features',
+                 #plotlyOutput("cf_plot", height=600),
+                 #DT::dataTableOutput("cf_table")
+        ),
+        tabPanel('5) Complex differential intensity',
                  plotlyOutput("cc_volcano", height=400),
                  DT::dataTableOutput("cc_difftable")
         )
