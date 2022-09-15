@@ -45,8 +45,8 @@ source("methods.R")
 ## prepare data
 #calibration_functions <- readRDS("www/data/calibration_functions.rda")
 calibration_functions <- readRDS("data/calibration.rds")
-proteins <- readRDS("data/proteins.rds")
-protTraces = readRDS("data/protTracesList.rds")
+proteins <- readRDS("data/proteins.rda")
+protTraces = readRDS("data/protein_traces_list.rds")
 designMatrix = readRDS("data/design_matrix.rds")
 # default_proteins <- c("GPS1 COPS1 CSN1", "COPS3 CSN3", "COPS8 CSN8")
 default_proteins <- c("NDC80 HEC HEC1 KNTC2",

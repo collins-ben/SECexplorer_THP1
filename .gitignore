@@ -3,6 +3,9 @@
 /www/*
 /rsconnect/*
 
+# deploy command
+deploy.r
+
 # History files
 .Rhistory
 .Rapp.history
