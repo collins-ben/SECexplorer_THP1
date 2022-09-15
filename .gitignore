@@ -2,6 +2,8 @@
 /data/*
 /www/*
 /rsconnect/*
+/rsconnect/*/*
+/rsconnect/*/*/*
 
 # deploy command
 deploy.r
