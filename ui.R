@@ -145,7 +145,6 @@ shinyUI(fluidPage(
       br(),
       br(),
       br(),
-      p("Prototype viewer app, MH 2020-02-22")
     ),
 
     # Instruction and analysis panels
@@ -155,13 +154,15 @@ shinyUI(fluidPage(
         tabPanel('Welcome & Instructions',
                  h1("Welcome to SECexplorer THP1"),
                  p("SECexplorer offers a dynamic interface for the investigator-driven exploration of mass spectrometric SEC-SWATH-MS datasets describing proteome assembly state dynamics as a function of different perturbed states of the biological system."),
-                 p("In this study, we ... > PROJECT DESCRIPTION <"),
-                 p("THP1 cells were investigated in three distinct biological conditions:"),
+                 p("In this study, we established an integrated experimental and computational workflow for rapid profiling of protein complex re-organization in perturbed systems"),
                  p(),
+                 p("Bludau, I., Nicod, C., Martelli, C., Xue, P., Heusel, M., Fossati, A., Uliana, F., Frommelt, F., Aebersold, R. & Collins, B. C. Rapid profiling of protein complex re-organization in perturbed systems. bioRxiv 2021.12.17.473177 (2021) https://doi.org/10.1101/2021.12.17.473177"),
+                 p(),
+                 p("THP1 cells were investigated in three distinct biological conditions:"),
                  tags$ol(
-                   tags$ul("Undifferentiated: THP1 cells were grown in xxx in xxx dishes and harvested by xxx at xxx growth/confluency."),
-                   tags$ul("Differentiated: Undifferentiated cells were differentiated to xxx state by yyy."),
-                   tags$ul("Stimulated: Undifferentiated cells (?) were treated (xxx).")),
+                   tags$ul("Undifferentiated: THP1 cells were grown in suspension in the monocytic state"),
+                   tags$ul("Differentiated: Monocytic cells were differentiated in to a macrophage-like phenotype using phorbol ester treatment"),
+                   tags$ul("Stimulated: Macrophage cells were stimulated with lipopolysaccharide")),
                  p(),
                  p("This tool facilitates exploration of this dataset in the following analysis tabs:"),
                  tags$ol(
