@@ -103,7 +103,7 @@ shinyUI(fluidPage(
                                                  "Stimulated vs. undifferentiated"),
                                       selected = "Differentiated vs. undifferentiated",
                                       multiple = FALSE),
-                       numericInput("pc_assemblyScatter_meanDiffcutoff", label = "mean Difference cutoff", value = 0.3),
+                       numericInput("pc_assemblyScatter_meanDiffcutoff", label = "mean Difference cutoff", value = 0.25),
                        checkboxInput("pc_diffAssemblytable_show_all",
                                      "Show all entries in table\n(i.e. not only those passing mean Difference cutoff criterion)", value = FALSE)
                        
@@ -127,7 +127,7 @@ shinyUI(fluidPage(
                                       choices= c("Differentiated vs. undifferentiated",
                                                  "Stimulated vs. differentiated",
                                                  "Stimulated vs. undifferentiated"),
-                                      selected = "Differentiated vs. undifferentiated",
+                                      selected = "Stimulated vs. differentiated",
                                       multiple = FALSE),
                        p("Identify regulated complexes from plot hover info.\n
                          To analyze traces, select complex of interest via the field below:"),
@@ -136,7 +136,7 @@ shinyUI(fluidPage(
                                       choices = complexes_diff_ids,
                                       multiple = FALSE, 
                                       # options = list(maxOptions = 6000),
-                                      selected = "127_corum_corum"),
+                                      selected = "1172_string;624_string"),
                        numericInput("cc_volcano_pvalcutoff", label = "maximal pBHadj cutoff:", value = 0.05, max = 1),
                        numericInput("cc_volcano_fccutoff", label = "minimal fold-change (FC) cutoff:", value = 2),
                        checkboxInput("cc_difftable_show_all", "Show all (i.e. also non-significant)\n entries in table", value = FALSE)

@@ -49,9 +49,7 @@ proteins <- readRDS("data/proteins.rda")
 protTraces = readRDS("data/protein_traces_list.rds")
 designMatrix = readRDS("data/design_matrix.rds")
 # default_proteins <- c("GPS1 COPS1 CSN1", "COPS3 CSN3", "COPS8 CSN8")
-default_proteins <- c("IFIT1 G10P1 IFI56 IFNAI1 ISG56",
-                      "IFIT2 CIG-42 G10P2 IFI54 ISG54",
-                      "IFIT3 CIG-49 IFI60 IFIT4 ISG60")
+default_proteins <- c("SHC1 SHC SHCA")
 
 default_complexftid <- "1172_string;624_string"
 
