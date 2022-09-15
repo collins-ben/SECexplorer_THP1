@@ -1,6 +1,7 @@
 # data and www folders
 /data/*
 /www/*
+/rsconnect/*
 
 # History files
 .Rhistory
