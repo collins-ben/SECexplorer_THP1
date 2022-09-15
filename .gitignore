@@ -1,8 +1,7 @@
 # data and www folders
 /data/*
 /www/*
-/rsconnect/*
-/rsconnect/**
+/rsconnect/
 
 # deploy command
 deploy.r
