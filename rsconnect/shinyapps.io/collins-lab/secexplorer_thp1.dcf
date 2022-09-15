@@ -1,0 +1,11 @@
+name: secexplorer_thp1
+title:
+username:
+account: collins-lab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7021573
+bundleId: 6305234
+url: https://collins-lab.shinyapps.io/secexplorer_thp1/
+when: 1663250066.6617
+lastSyncTime: 1663250066.66171
