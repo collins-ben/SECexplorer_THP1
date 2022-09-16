@@ -136,7 +136,7 @@ shinyUI(fluidPage(
                                       choices = complexes_diff_ids,
                                       multiple = FALSE, 
                                       # options = list(maxOptions = 6000),
-                                      selected = "1172_string;624_string"),
+                                      selected = "127_corum"),
                        numericInput("cc_volcano_pvalcutoff", label = "maximal pBHadj cutoff:", value = 0.05, max = 1),
                        numericInput("cc_volcano_fccutoff", label = "minimal fold-change (FC) cutoff:", value = 2),
                        checkboxInput("cc_difftable_show_all", "Show all (i.e. also non-significant)\n entries in table", value = FALSE)
@@ -293,7 +293,7 @@ shinyUI(fluidPage(
         ),
         tabPanel('1) View protein traces',       
                  plotlyOutput("plot", height = 600),
-                 downloadButton("downloadPlot", "Download graph as PDF"),
+                 #downloadButton("downloadPlot", "Download graph as PDF"),
                  p(),
                  DT::dataTableOutput("anntable")
         ),
@@ -307,7 +307,7 @@ shinyUI(fluidPage(
         ),
         tabPanel('4) View complex features',
                  plotOutput("cf_plot", height=600),
-                 downloadButton("downloadPlot_cF", "Download graph as PDF"),
+                 #downloadButton("downloadPlot_cF", "Download graph as PDF"),
                  p(),
                  # Not functional as no plot object is available for output
                  DT::dataTableOutput("cf_table")

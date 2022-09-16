@@ -17,6 +17,9 @@ if (!require("data.table")){
 if (!require("DT")){
   install.packages("DT")
 }
+if (!require("plyr")){
+  install.packages("DT")
+}
 if (!requireNamespace("BiocManager", quietly = TRUE)){
   install.packages("BiocManager")
 }
@@ -60,6 +63,7 @@ complexFeatures <- readRDS("data/complexFeaturesCollapsed.rda")
 diffComplexes_stimulated_undifferentiated <- readRDS("data/complex_DiffExprComplex_stimulated_undifferentiated.rda")
 diffComplexes_stimulated_differentiated <- readRDS("data/complex_DiffExprComplex_stimulated_differentiated.rda")
 diffComplexes_differentiated_undifferentiated <- readRDS("data/complex_DiffExprComplex_differentiated_undifferentiated.rda")
+
 
 # Explore & process into useable overview tables
 proteins = unique(rbind(protTraces$undifferentiated_1$trace_annotation[, .(protein_id, Entry_name, Gene_names, Entry_name, Length, Mass, protein_mw)],
@@ -125,6 +129,25 @@ if (!("Gene_names" %in% names(diffAssemblyState_stimulated_undifferentiated))) {
   saveRDS(diffAssemblyState_stimulated_undifferentiated,
           file = "data/diffAssemblyState_stimulated_undifferentiated.rda")
 }
+
+# annotate diffComplexes with complex names and protein subunits so they appear in the table output later
+complexFeaturesAbbrev <- subset(complexFeatures, select = c(complex_id, complex_name, subunits, apex))
+
+diffComplexes_stimulated_undifferentiated <- join(x = diffComplexes_stimulated_undifferentiated, y = complexFeaturesAbbrev, by = c("complex_id", "apex"),
+                                                   type="left")
+diffComplexes_stimulated_undifferentiated  <- diffComplexes_stimulated_undifferentiated [, c(1,17,18,2:16)]
+saveRDS(diffAssemblyState_stimulated_undifferentiated, file = "data/complex_DiffExprComplex_stimulated_undifferentiated_annot.rda")
+
+
+diffComplexes_stimulated_differentiated <- join(x = diffComplexes_stimulated_differentiated, y = complexFeaturesAbbrev, by = c("complex_id", "apex"),
+                                                type="left")
+diffComplexes_stimulated_differentiated  <- diffComplexes_stimulated_differentiated [, c(1,17,18,2:16)]
+saveRDS(diffComplexes_stimulated_differentiated, file = "data/complex_DiffExprComplex_stimulated_differentiated_annot.rda")
+
+diffComplexes_differentiated_undifferentiated <- join(x = diffComplexes_differentiated_undifferentiated, y = complexFeaturesAbbrev, by = c("complex_id", "apex"),
+                                                      type="left")
+diffComplexes_differentiated_undifferentiated <- diffComplexes_differentiated_undifferentiated [, c(1,17,18,2:16)]
+saveRDS(diffComplexes_differentiated_undifferentiated, file = "data/complex_DiffExprComplex_differentiated_undifferentiated_annot.rda")
 
 
 # Annotate parent complexes
