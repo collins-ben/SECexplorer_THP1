@@ -127,7 +127,7 @@ shinyUI(fluidPage(
                                       choices= c("Differentiated vs. undifferentiated",
                                                  "Stimulated vs. differentiated",
                                                  "Stimulated vs. undifferentiated"),
-                                      selected = "Stimulated vs. differentiated",
+                                      selected = "Differentiated vs. undifferentiated",
                                       multiple = FALSE),
                        p("Identify regulated complexes from plot hover info.\n
                          To analyze traces, select complex of interest via the field below:"),
